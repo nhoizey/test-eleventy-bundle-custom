@@ -1,0 +1,12 @@
+<html>
+  <head>
+    <title>Eleventy Bundle & Custom format</title>
+    {%- js "bundle_1" %}{% renderFile "src/assets/js/common.js" %}{% endjs %}
+    <script src="{% getBundleFileUrl "js", "bundle_1" %}"></script>
+    <script src="{% getBundleFileUrl "js", "bundle_3" %}"></script>
+  </head>
+  <body>
+    <h1>{{ title | safe }}</h1>
+    {{ content | safe }}
+  </body>
+</html>

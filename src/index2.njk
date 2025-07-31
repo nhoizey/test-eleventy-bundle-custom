@@ -1,0 +1,8 @@
+---
+layout: default.njk
+permalink: index2.html
+title: Page 2
+---
+
+<script src="{% getBundleFileUrl "js", "bundle_2" %}"></script>
+{%- js "bundle_2" %}{% renderFile "src/assets/js/for_page_2.js" %}{% endjs %}

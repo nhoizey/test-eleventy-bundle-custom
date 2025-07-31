@@ -1,0 +1,13 @@
+{
+  "name": "test-eleventy-bundle-custom",
+  "version": "1.0.0",
+  "type": "module",
+  "devDependencies": {
+    "@11ty/eleventy": "^3.1.2",
+    "esbuild": "^0.25.8"
+  },
+  "scripts": {
+    "build": "rm -rf ./_site && eleventy",
+    "start": "rm -rf ./_site && eleventy --serve"
+  }
+}
