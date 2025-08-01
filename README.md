@@ -39,7 +39,7 @@ Compiling script_1.js…
 - `script_1.js` should be used in all 3 pages, it is loaded in the `default.njk` layout with `bundle_1`: `<script src="{% getBundleFileUrl "js", "bundle_1" %}"></script>`
 - `script_2.js` should be used only in `index_2.njk` and `index_3.njk`, where it is loaded in `bundle_2`: `<script src="{% getBundleFileUrl "js", "bundle_2" %}"></script>`
 
-## Rendering/bundling the scripts
+### Rendering/bundling the scripts
 
 - `script_1.js` is **rendered 3 times** when `{% js "bundle_1" %}{% renderFile "src/assets/js/script_1.js" %}{% endjs %}` is in `default.njk`
 - `script_2.js` is rendered only once when `{% js "bundle_2" %}{% renderFile "src/assets/js/script_2.js" %}{% endjs %}` is in `index_2.njk`, but it is then **not available** in `index_3.html`
