@@ -9,17 +9,38 @@ npm install
 npm run build
 ```
 
-## Issues
+## What I want to achieve
 
-### JS files rendered with `{% renderFile … %}` are compiled multiple times
+I would like to have each script **rendered only once**, even if it is **used in multiple pages**.
 
-When running `npm run build`, you should see:
-- `Building common.js…` **3 times**, because it is rendered once as a template file, and twice in the `default.njk` layout because it is used in both `index.njk` and `index2.njk`.
-- `Building for_page_2.js…` **twice**, because it is rendered once as a template file, and once in `index2.njk`.
-- `Building a_third_one.js…` **twice**, because it is rendered once as a template file, and once in `assets.njk`.
+## What I currently have
 
-There should be only one build for each JS file.
+I have 3 pages.
 
-### The JS file rendered in `assets.njk` is not available in `bundle_3`
+One script is loaded in all 3 pages, but another script is loaded only in 2 of them.
 
-Despite being rendered in `assets.njk` with `renderFile`, the JS file `a_third_one.js` is not included in the `bundle_3` output requested by `<script src="{% getBundleFileUrl "js", "bundle_3" %}"></script>` in the `default.njk` layout. 🤷‍♂️
+The scripts are bundled using Eleventy's bundle plugin.
+
+Here's the log of the build:
+
+```
+Compiling script_2.js…
+Compiling script_1.js…
+Compiling script_1.js…
+Compiling script_1.js…
+[11ty] Writing ./_site/index_3.html from ./src/index_3.njk
+[11ty] Writing ./_site/index_2.html from ./src/index2.njk
+[11ty] Writing ./_site/index.html from ./src/index.njk
+[11ty] Wrote 3 files in 0.06 seconds (v3.1.2)
+```
+
+### Loading the bundled scripts
+
+- `script_1.js` should be used in all 3 pages, it is loaded in the `default.njk` layout with `bundle_1`: `<script src="{% getBundleFileUrl "js", "bundle_1" %}"></script>`
+- `script_2.js` should be used only in `index_2.njk` and `index_3.njk`, where it is loaded in `bundle_2`: `<script src="{% getBundleFileUrl "js", "bundle_2" %}"></script>`
+
+## Rendering/bundling the scripts
+
+- `script_1.js` is **rendered 3 times** when `{% js "bundle_1" %}{% renderFile "src/assets/js/script_1.js" %}{% endjs %}` is in `default.njk`
+- `script_2.js` is rendered only once when `{% js "bundle_2" %}{% renderFile "src/assets/js/script_2.js" %}{% endjs %}` is in `index_2.njk`, but it is then **not available** in `index_3.html`
+- If I add `{% js "bundle_2" %}{% renderFile "src/assets/js/script_2.js" %}{% endjs %}` in `index_3.njk`, it is **rendered twice**

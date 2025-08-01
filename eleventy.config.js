@@ -2,17 +2,24 @@ import path from "node:path";
 import { EleventyRenderPlugin } from "@11ty/eleventy";
 import esbuild from "esbuild";
 
+const memoizedAssets = {};
+
 export default async function (eleventyConfig) {
   eleventyConfig.addPlugin(EleventyRenderPlugin);
   eleventyConfig.addBundle("js", {
     toFileDirectory: "bundle",
   });
-  eleventyConfig.addTemplateFormats("js");
+
+  // Useless if all script are used with Bundle
+  // eleventyConfig.addTemplateFormats("js");
+
   eleventyConfig.addExtension("js", {
     outputFileExtension: "js",
     read: true,
     useLayouts: false,
     compile: async (inputContent, inputPath) => {
+      console.log(`Compiling ${path.basename(inputPath)}…`);
+
       if (!inputContent || inputContent.trim() === "") return;
 
       const normalizedPath = path.normalize(inputPath);
@@ -20,7 +27,9 @@ export default async function (eleventyConfig) {
       // Only convert JS files from the JS assets folder
       if (!normalizedPath.includes("src/assets/js")) return;
 
-      console.log(`Building ${path.basename(normalizedPath)}…`);
+      if (memoizedAssets[normalizedPath]) {
+        return async (data) => memoizedAssets[normalizedPath];
+      }
 
       return async (data) => {
         let output;
@@ -35,6 +44,7 @@ export default async function (eleventyConfig) {
             write: false,
             external: ["fs"],
           });
+          memoizedAssets[normalizedPath] = output.outputFiles[0].text;
         } catch (error) {
           console.error("☠️ esbuild error! ☠️");
           console.dir(error);
